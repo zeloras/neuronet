@@ -5,27 +5,25 @@ def sigmoid(i):
     return 1 / (1 + numpy.exp(-i))
 
 
-training = numpy.array([[0, 0, 1],
-                        [1, 1, 1],
-                        [1, 0, 1],
-                        [0, 0, 0],
-                        [0, 1, 1]])
+def calculate(training: [], outputs: [], compare: [], iterations: int = 10000):
+    training = numpy.array(training)
+    outputs = numpy.array([outputs]).T
+    weights = 2 * numpy.random.random((len(training[0]), 1)) - 1
 
-outputs = numpy.array([[0, 1, 1, 0, 0]]).T
-numpy.random.seed(1)
-weights = 2 * numpy.random.random((3, 1)) - 1
-print("Random data")
-print(weights)
+    for i in range(iterations):
+        outputs_data = sigmoid(numpy.dot(training, weights))
+        error = outputs - outputs_data
+        weights += numpy.dot(training.T, error * (outputs_data * (1 - outputs_data)))
 
-for i in range(30000):
-    layer = training
-    outputs_data = sigmoid(numpy.dot(layer, weights))
-    error = outputs - outputs_data
-    adjustment = numpy.dot(layer.T, error * (outputs_data * (1 - outputs_data)))
-    weights += adjustment
+    return sigmoid(numpy.dot(numpy.array(compare), weights))
 
 
-input_new = numpy.array([1, 1, 1])
-outputs = sigmoid(numpy.dot(input_new, weights))
-
-print(outputs)
+out_truth_data = [1, 0, 1, 0, 0, 1]
+training_data = [[0, 1, 1, 1],
+            [1, 0, 1, 1],
+            [1, 1, 0, 1],
+            [0, 0, 0, 1],
+            [0, 0, 0, 0],
+            [0, 1, 1, 1]]
+compare_data = [0, 0, 1, 0]
+print(calculate(training_data, out_truth_data, compare_data, iterations=1000))
